@@ -1,286 +1,378 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Hospital AI Front Desk</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8" />
+    <title>Alisha | The Future of Healthcare Front Desk</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<style>
-:root {
-  --bg: #0b0f0d;
-  --panel: #111815;
-  --border: #1f2a24;
-  --green: #00ff9c;
-  --green-soft: rgba(0,255,156,0.15);
-  --text: #e6fff4;
-  --muted: #7da89a;
-}
+    <style>
+        :root {
+            --primary: #00ff9c;
+            --primary-glow: rgba(0, 255, 156, 0.4);
+            --bg-dark: #050807;
+            --panel: rgba(15, 23, 20, 0.8);
+            --border: rgba(255, 255, 255, 0.08);
+            --glass: rgba(255, 255, 255, 0.03);
+        }
 
-* { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-body {
-  margin: 0;
-  background: radial-gradient(circle at top, #0f1c16, #050806);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  color: var(--text);
-}
+        body {
+            margin: 0;
+            background-color: var(--bg-dark);
+            color: #e6fff4;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            overflow-x: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
-.chat-container {
-  width: 420px;
-  height: 92vh;
-  background: linear-gradient(180deg, #0f1512, #080c0a);
-  border-radius: 18px;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 0 0 1px var(--border), 0 25px 80px rgba(0,255,156,0.15);
-  overflow: hidden;
-}
+        /* Animated Background Mesh */
+        .mesh-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(0, 255, 156, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(0, 198, 122, 0.05) 0%, transparent 40%);
+            filter: blur(80px);
+        }
 
-/* Header */
-.header {
-  padding: 16px;
-  text-align: center;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  background: linear-gradient(90deg, #0e1b15, #0a1410);
-  border-bottom: 1px solid var(--border);
-  color: var(--green);
-}
+        /* Glassmorphism Sidebar */
+        .glass-panel {
+            background: var(--panel);
+            backdrop-filter: blur(24px);
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+        }
 
-/* Messages */
-.messages {
-  flex: 1;
-  padding: 16px;
-  overflow-y: auto;
-}
+        /* Alisha Avatar Pulse */
+        .alisha-avatar {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+        }
 
-.messages::-webkit-scrollbar {
-  width: 6px;
-}
-.messages::-webkit-scrollbar-thumb {
-  background: var(--green-soft);
-  border-radius: 6px;
-}
+        .pulse-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            animation: pulse 3s infinite;
+            opacity: 0;
+        }
 
-.msg {
-  max-width: 78%;
-  padding: 12px 14px;
-  border-radius: 14px;
-  font-size: 14px;
-  line-height: 1.45;
-  margin-bottom: 14px;
-  animation: slideUp .25s ease-out;
-}
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.5; }
+            100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+        }
 
-.bot {
-  background: #0f1f18;
-  border: 1px solid var(--border);
-  color: var(--text);
-  box-shadow: inset 0 0 0 1px rgba(0,255,156,0.05);
-}
+        /* Chat Styles */
+        .chat-scroll {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .chat-scroll::-webkit-scrollbar { display: none; }
 
-.user {
-  background: linear-gradient(135deg, #00ff9c, #00c67a);
-  color: #002f1e;
-  align-self: flex-end;
-  font-weight: 600;
-}
+        .message-bubble {
+            max-width: 85%;
+            animation: messageEntry 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
 
-/* Cards */
-.card {
-  background: #0f1713;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 12px;
-  margin-bottom: 14px;
-  animation: slideUp .25s ease-out;
-}
+        @keyframes messageEntry {
+            from { opacity: 0; transform: translateY(15px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
 
-.card button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  border-radius: 10px;
-  border: none;
-  background: transparent;
-  color: var(--green);
-  font-weight: 600;
-  border: 1px solid var(--green-soft);
-  cursor: pointer;
-  transition: all .2s ease;
-}
+        .bot-msg {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 0 16px 16px 16px;
+        }
 
-.card button:hover {
-  background: var(--green-soft);
-  box-shadow: 0 0 20px rgba(0,255,156,0.25);
-}
+        .user-msg {
+            background: linear-gradient(135deg, var(--primary), #00c67a);
+            color: #002f1e;
+            border-radius: 16px 16px 0 16px;
+            margin-left: auto;
+            font-weight: 500;
+        }
 
-/* Alert */
-.alert {
-  background: rgba(255,60,60,0.1);
-  border: 1px solid #ff5252;
-  color: #ffb3b3;
-  padding: 12px;
-  border-radius: 12px;
-  margin-bottom: 14px;
-}
+        .typing-indicator span {
+            width: 5px;
+            height: 5px;
+            background: var(--primary);
+            display: inline-block;
+            border-radius: 50%;
+            animation: blink 1.4s infinite both;
+        }
 
-/* Input */
-.input-box {
-  display: flex;
-  border-top: 1px solid var(--border);
-  background: #0b120f;
-}
+        @keyframes blink {
+            0%, 100% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
 
-.input-box input {
-  flex: 1;
-  padding: 16px;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: var(--text);
-  font-size: 14px;
-}
+        .input-focus:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
 
-.input-box button {
-  background: transparent;
-  border: none;
-  padding: 0 22px;
-  color: var(--green);
-  font-size: 15px;
-  cursor: pointer;
-}
+        /* Action Buttons */
+        .action-btn {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            transition: all 0.2s ease;
+        }
+        .action-btn:hover {
+            background: var(--primary-glow);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
 
-.input-box button:hover {
-  text-shadow: 0 0 12px var(--green);
-}
-
-/* Typing indicator */
-.typing {
-  display: inline-flex;
-  gap: 4px;
-}
-.typing span {
-  width: 6px;
-  height: 6px;
-  background: var(--green);
-  border-radius: 50%;
-  animation: blink 1.4s infinite both;
-}
-.typing span:nth-child(2) { animation-delay: .2s }
-.typing span:nth-child(3) { animation-delay: .4s }
-
-@keyframes blink {
-  0% { opacity: .2 }
-  20% { opacity: 1 }
-  100% { opacity: .2 }
-}
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-</style>
+        .alert-card {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+        }
+    </style>
 </head>
+<body class="flex flex-col lg:flex-row p-4 lg:p-8 gap-6 lg:gap-8">
 
-<body>
+    <div class="mesh-bg"></div>
 
-<div class="chat-container">
-  <div class="header">🧠 Hospital AI Front Desk</div>
-  <div class="messages" id="messages"></div>
+    <!-- Sidebar / Brand Section -->
+    <aside class="flex flex-col w-full lg:w-1/3 xl:w-1/4 gap-6">
+        <div class="glass-panel rounded-3xl p-8 flex-1 flex flex-col justify-center items-center text-center">
+            <div class="alisha-avatar mb-6">
+                <div class="pulse-ring"></div>
+                <div class="pulse-ring" style="animation-delay: 1s;"></div>
+                <div class="w-full h-full rounded-full border-4 border-emerald-500/30 overflow-hidden bg-emerald-950 flex items-center justify-center">
+                    <i class="fas fa-microchip text-5xl text-emerald-400"></i>
+                </div>
+            </div>
+            
+            <h1 class="text-4xl font-black mb-2 tracking-tight text-white">ALISHA</h1>
+            <p class="text-emerald-400 font-medium tracking-widest uppercase text-xs mb-6">Autonomous Healthcare Intelligence</p>
+            
+            <div class="space-y-4 w-full">
+                <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5 text-left">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold text-white">Smart Scheduling</p>
+                        <p class="text-xs text-emerald-500/60">Live Appointment Sync</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5 text-left">
+                    <div class="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold text-white">Billing Support</p>
+                        <p class="text-xs text-blue-500/60">Instant Insurance Verification</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="glass-panel rounded-3xl p-6 hidden lg:block">
+            <h3 class="text-sm font-bold text-emerald-500 uppercase tracking-widest mb-4">System Status</h3>
+            <div class="flex items-center justify-between text-xs mb-2">
+                <span class="text-white/60">AI Latency</span>
+                <span class="text-emerald-400">12ms</span>
+            </div>
+            <div class="w-full bg-white/5 h-1 rounded-full overflow-hidden">
+                <div class="bg-emerald-500 h-full w-[95%] shadow-[0_0_8px_#10b981]"></div>
+            </div>
+        </div>
+    </aside>
 
-  <div class="input-box">
-    <input id="input" placeholder="Ask about appointments, billing, emergencies…" />
-    <button onclick="send()">➤</button>
-  </div>
-</div>
+    <!-- Main Chat Container -->
+    <main class="flex-1 flex flex-col glass-panel rounded-3xl overflow-hidden relative border-white/10">
+        <!-- Header -->
+        <header class="p-6 border-b border-white/10 flex items-center justify-between bg-white/5 backdrop-blur-md">
+            <div class="flex items-center gap-3">
+                <div class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10b981]"></div>
+                <div>
+                    <h2 class="text-lg font-bold text-white leading-none">Virtual Front Desk</h2>
+                    <p class="text-xs text-emerald-500/70 mt-1">Operational 24/7</p>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 text-white/60">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Messages Area -->
+        <div id="messages" class="flex-1 overflow-y-auto p-6 space-y-6 chat-scroll flex flex-col">
+            <!-- Initial content added via JS -->
+        </div>
+
+        <!-- Input Section -->
+        <footer class="p-6 bg-emerald-950/20 border-t border-white/10">
+            <div class="relative flex items-center input-focus transition-all duration-300 bg-white/5 rounded-2xl border border-white/10 p-2">
+                <input 
+                    id="input" 
+                    type="text" 
+                    placeholder="Describe your health concern or ask for an appointment..."
+                    class="w-full bg-transparent border-none outline-none py-3 px-4 text-white placeholder:text-white/20 text-sm"
+                    onkeypress="if(event.key === 'Enter') send()"
+                />
+                <button 
+                    onclick="send()"
+                    class="bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold px-6 py-3 rounded-xl transition-all active:scale-95 shadow-lg shadow-emerald-500/20"
+                >
+                    <i class="fas fa-paper-plane mr-2"></i>SEND
+                </button>
+            </div>
+            <p class="text-[10px] text-center text-white/30 mt-4 uppercase tracking-[0.2em]">End-to-End Encrypted HIPAA Compliant Interface</p>
+        </footer>
+    </main>
 
 <script>
-const WEBHOOK_URL = "https://damnart-ai-guladab.n8n-wsk.com/webhook/healthcare";
-const sessionId = crypto.randomUUID();
+    const WEBHOOK_URL = "https://damnart-ai-guladab.n8n-wsk.com/webhook/healthcare";
+    const sessionId = crypto.randomUUID();
 
-const messages = document.getElementById("messages");
-const input = document.getElementById("input");
+    const messages = document.getElementById("messages");
+    const input = document.getElementById("input");
 
-function addMessage(text, sender="bot") {
-  const div = document.createElement("div");
-  div.className = `msg ${sender}`;
-  div.textContent = text;
-  messages.appendChild(div);
-  messages.scrollTop = messages.scrollHeight;
-}
+    function addMessage(text, sender="bot") {
+        const wrapper = document.createElement("div");
+        wrapper.className = `flex w-full ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
+        
+        const div = document.createElement("div");
+        div.className = `message-bubble px-5 py-4 text-sm leading-relaxed ${sender === 'bot' ? 'bot-msg' : 'user-msg'}`;
+        
+        // Add timestamp
+        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        div.innerHTML = `
+            <div>${text}</div>
+            <div class="text-[10px] mt-2 opacity-50 text-right">${time}</div>
+        `;
+        
+        wrapper.appendChild(div);
+        messages.appendChild(wrapper);
+        scrollToBottom();
+    }
 
-function addTyping() {
-  const div = document.createElement("div");
-  div.className = "msg bot";
-  div.id = "typing";
-  div.innerHTML = `<div class="typing"><span></span><span></span><span></span></div>`;
-  messages.appendChild(div);
-  messages.scrollTop = messages.scrollHeight;
-}
+    function addTyping() {
+        const div = document.createElement("div");
+        div.className = "flex justify-start w-full";
+        div.id = "typing";
+        div.innerHTML = `
+            <div class="bot-msg px-5 py-4 rounded-2xl flex items-center gap-2">
+                <div class="typing-indicator flex gap-1">
+                    <span></span><span style="animation-delay:0.2s"></span><span style="animation-delay:0.4s"></span>
+                </div>
+                <span class="text-[10px] text-emerald-500/60 uppercase font-bold tracking-widest">Alisha is thinking</span>
+            </div>
+        `;
+        messages.appendChild(div);
+        scrollToBottom();
+    }
 
-function removeTyping() {
-  const t = document.getElementById("typing");
-  if (t) t.remove();
-}
+    function removeTyping() {
+        const t = document.getElementById("typing");
+        if (t) t.remove();
+    }
 
-function addUI(ui) {
-  if (!ui) return;
+    function addUI(ui) {
+        if (!ui) return;
 
-  if (ui.type === "alert") {
-    const alert = document.createElement("div");
-    alert.className = "alert";
-    alert.textContent = ui.message || "Attention required";
-    messages.appendChild(alert);
-  }
+        if (ui.type === "alert") {
+            const alert = document.createElement("div");
+            alert.className = "alert-card rounded-2xl p-4 text-sm flex items-start gap-4 mb-4 animation: messageEntry 0.3s ease-out";
+            alert.innerHTML = `
+                <i class="fas fa-exclamation-triangle mt-1"></i>
+                <div>
+                    <strong class="block mb-1">Medical Advisory</strong>
+                    ${ui.message || "Attention required"}
+                </div>
+            `;
+            messages.appendChild(alert);
+        }
 
-  if (ui.items) {
-    const card = document.createElement("div");
-    card.className = "card";
+        if (ui.items) {
+            const container = document.createElement("div");
+            container.className = "flex flex-wrap gap-2 mb-4 justify-start";
 
-    ui.items.forEach(item => {
-      const btn = document.createElement("button");
-      btn.textContent = item.label;
-      btn.onclick = () => send(item.action, true);
-      card.appendChild(btn);
-    });
+            ui.items.forEach(item => {
+                const btn = document.createElement("button");
+                btn.className = "action-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider";
+                btn.textContent = item.label;
+                btn.onclick = () => {
+                    // Visual feedback
+                    btn.classList.add('bg-emerald-500', 'text-emerald-950');
+                    send(item.action, true);
+                };
+                container.appendChild(btn);
+            });
 
-    messages.appendChild(card);
-  }
+            messages.appendChild(container);
+        }
+        scrollToBottom();
+    }
 
-  messages.scrollTop = messages.scrollHeight;
-}
+    function scrollToBottom() {
+        messages.scrollTo({
+            top: messages.scrollHeight,
+            behavior: 'smooth'
+        });
+    }
 
-async function send(message=null, isAction=false) {
-  const text = message || input.value;
-  if (!text) return;
+    async function send(message=null, isAction=false) {
+        const text = message || input.value;
+        if (!text) return;
 
-  if (!isAction) addMessage(text, "user");
-  input.value = "";
+        if (!isAction) addMessage(text, "user");
+        input.value = "";
 
-  addTyping();
+        addTyping();
 
-  const params = new URLSearchParams({
-    message: isAction ? "" : text,
-    clickedAction: isAction ? text : "",
-    sessionId
-  });
+        try {
+            const params = new URLSearchParams({
+                message: isAction ? "" : text,
+                clickedAction: isAction ? text : "",
+                sessionId
+            });
 
-  const res = await fetch(`${WEBHOOK_URL}?${params.toString()}`);
-  const data = await res.json();
+            const res = await fetch(`${WEBHOOK_URL}?${params.toString()}`);
+            
+            if (!res.ok) throw new Error("Connection failed");
+            
+            const data = await res.json();
+            removeTyping();
+            addMessage(data.message || "I apologize, I'm having trouble connecting to my knowledge base. Please try again.");
+            addUI(data.ui);
+        } catch (error) {
+            removeTyping();
+            addMessage("I encountered a system error. Please check your internet connection or try refreshing the session.", "bot");
+            console.error(error);
+        }
+    }
 
-  removeTyping();
-  addMessage(data.message || "…");
-  addUI(data.ui);
-}
-
-send("hello");
+    // Initialize with welcome
+    window.onload = () => {
+        setTimeout(() => send("hello"), 500);
+    };
 </script>
 
 </body>
 </html>
-
